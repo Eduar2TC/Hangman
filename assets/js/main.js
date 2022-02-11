@@ -1,4 +1,4 @@
-let words = ['Holaa', 'Locaa', 'Papeles'];
+let words = ['Hola', 'Loca', 'Papeles', 'Dogecoin'];
 let = container = document.querySelector('.container:nth-child(1)');
 let htmlAddWords = `
         <div class="col">
@@ -462,16 +462,16 @@ function drawMessage( letter, message, health, canvas ){
     //Message color
     if (message === 'Correct!') {
         ctx.font = '1.3rem Caveat Brush';
-        ctx.fillStyle = 'green';
+        ctx.fillStyle = '#B5EAEA';
     } else if (message === 'Already entered!' ){
         ctx.font = '1.2rem Caveat Brush';
         ctx.fillStyle = 'yellow';
     }
     else {
-        ctx.font = '1.3rem Caveat Brush';
+        ctx.font = '1.35rem Caveat Brush';
         ctx.fillStyle = 'red';
     }
-    ctx.fillText(message, posIniX, posEndY);
+    ctx.fillText(message, posIniX, posEndY - 5);
     
     ctx.font = '1.2rem Caveat Brush';
     ctx.fillStyle = 'white';
@@ -482,7 +482,7 @@ function drawMessage( letter, message, health, canvas ){
     ctx.fillText(letter, posIniX + 50, posEndY + 23);
     
     ctx.font = '2rem Caveat Brush';
-    ctx.fillStyle = 'red';
+    ctx.fillStyle = '#FF2442';
     ctx.fillText('♥ ', posIniX, posEndY + 45);
 
     ctx.font = '1.5rem Caveat Brush';
