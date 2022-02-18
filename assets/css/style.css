@@ -60,7 +60,7 @@ body{
     color: white;
 }
 .row button:nth-child(2):hover{
-    color: darkorange;
+    color: crimson;
 }
 input[type='text']{
     height: 2rem;

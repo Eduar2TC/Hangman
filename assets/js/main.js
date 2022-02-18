@@ -1,4 +1,6 @@
 let words = ['Hola', 'Loca', 'Papeles', 'Dogecoin'];
+let globalArrayTuplesPositions = [];
+let globalWordSelected = undefined;
 let = container = document.querySelector('.container:nth-child(1)');
 let htmlAddWords = `
         <div class="col">
@@ -12,7 +14,7 @@ let htmlAddWords = `
         </div>`;
 let htmlMenu = `
         <div class="col">
-            <button onclick="loadGame()">Star Game</button>
+            <button onclick="loadGame()">Start Game</button>
             <button onclick="animationAddWord()" >Add word</button>
         </div>`;
 let htmlCanvas = `
@@ -25,7 +27,7 @@ let htmlCanvas = `
                     <div class="meme-img"></div>
                 </div>
                 <div class="menu-on-canvas">
-                    <button>Solve</button>
+                    <button onclick="solveGame()">Solve</button>
                     <button onclick="animationCancel()" >Exit</button>
                 </div>
         </div>
@@ -37,11 +39,13 @@ document.addEventListener("DOMContentLoaded", function () {
     let buttonAddWords = document.querySelector('.col button:nth-child(2)');
     let buttonCancel = document.querySelector('.row button:nth-child(2)');
     let actionAdd = document.querySelector('.row button:nth-child(1)');
+    let solve = document.querySelector('.menu-on-canvas button:nth-child(1)');
 
         buttonPlay.addEventListener('click', loadGame);
         buttonAddWords.addEventListener('click', animationAddWord);
         buttonCancel.addEventListener('click', animationCancel);
-        actionAdd = addEventListener('click', actionAddWord);        
+        actionAdd.addEventListener('click', actionAddWord);    
+        solve.addEventListener('click', solveGame);    
 });
 
 function animationAddWord() {
@@ -81,32 +85,36 @@ function playGame(){
     let health = 10;
     let message = undefined;
     let lettersCollected = [];
+
+    globalWordSelected = word;
+    globalArrayTuplesPositions = arrayTuplesPositions;
+
     //Key detection
     document.addEventListener("keydown", function (event) {
-
-        if (event.key !== 'CapsLock' && !(event.key > -1 && event.key < 10) && health > 0 && numberOfLetters > 0 ) {
+        let key = event.key.toUpperCase();
+        if ((key >= 'A' && key <= 'Z') && !(key > -1 && key < 10) && !(event.which > 2 && event.which < 48 || event.which > 57 && event.which < 65 && event.which > 90 && event.which < 256 )
+        && health > 0 && numberOfLetters > 0 ) {
             let letterPositionsOnWord = [];
-            if (word.indexOf(event.key) > -1 && lettersCollected.indexOf(event.key) === -1 ) { //Esta en la palabra y no se ha ingresado
-                letterPositionsOnWord = getIndexLetterFromWord(word, event.key); //Array of positions in word
-                drawLetter(event.key, letterPositionsOnWord, arrayTuplesPositions, canvasWord);
+            if (word.indexOf(key) > -1 && lettersCollected.indexOf(key) === -1 ) { //Esta en la palabra y no se ha ingresado
+                letterPositionsOnWord = getIndexLetterFromWord(word, key); //Array of positions in word
+                drawLetter(key, letterPositionsOnWord, arrayTuplesPositions, canvasWord); //( tecla, array de indices de posiciones de las coincidencias  )
                 message = 'Correct!';
-                drawMessage(event.key, message, health, canvasMessage);
-                lettersCollected.push( event.key );
+                drawMessage(key, message, health, canvasMessage);
+                lettersCollected.push( key );
                 numberOfLetters--;
                 if (numberOfLetters == 0 ){
                     drawGameOverMessage('win', canvas, rc);
                 }
-                console.log(numberOfLetters);
-            } else if (word.indexOf(event.key) > -1 && lettersCollected.indexOf(event.key) > -1 ) { //Esta en la palabra y ya se ha ingresado
+            } else if (word.indexOf(key) > -1 && lettersCollected.indexOf(key) > -1 ) { //Esta en la palabra y ya se ha ingresado
                 message = 'Already entered!';
                 health--;
-                drawMessage(event.key, message, health, canvasMessage);
+                drawMessage(key, message, health, canvasMessage);
                 drawBody(health, canvas, rc);
             } 
-            else if (word.indexOf(event.key) === -1) {
+            else if (word.indexOf(key) === -1) {
                 message = 'Incorrect!';
                 health--;
-                drawMessage(event.key, message, health, canvasMessage);
+                drawMessage(key, message, health, canvasMessage);
                 drawBody( health, canvas, rc);
             }
         }
@@ -416,7 +424,6 @@ function fix_dpi(canvas) {
 function drawLetter( letter, arrayPositionsOnWord, arrayTuplesPositions, canvas ){
     const ctx = canvas.getContext('2d');
     const rc = rough.canvas(canvas);
-    //rc.rectangle( 10, 10, 200, 100); // x, y, width, height
     ctx.font = '4rem Caveat Brush';
     ctx.fillStyle = 'white';
     let tuplesPositions = [];
@@ -438,7 +445,7 @@ function drawLinesLetters( canvas, word ){
     let posEndX = posInitX + 50;
     let posInitY = (canvas.height / 2) + 13;
     let arrayPositions =[];
-    for( var i = 0; i < word.length; i++ ){
+    for( let i = 0; i < word.length; i++ ){
         rc.line(
             posInitX , posInitY, posEndX, posInitY,
             {
@@ -506,11 +513,11 @@ function drawGameOverMessage( message, canvas, rc ){
     if( message === 'die' ){
         ctx.font = '3rem Gaegu';
         ctx.fillStyle = 'white';
-        ctx.fillText('You died :\'v !', posIniX, posIniY);
+        ctx.fillText('You died!', posIniX, posIniY);
     } else if (message === 'win' ){
         ctx.font = '3.5rem Gaegu';
         ctx.fillStyle = 'yellow';
-        ctx.fillText('You Win \\:v/ !', posIniX, posIniY);
+        ctx.fillText('You Win!', posIniX, posIniY);
     }
     //Draw line
     posIniX = posIniX + 50;
@@ -525,6 +532,15 @@ function drawGameOverMessage( message, canvas, rc ){
             strokeWidth: 3
         }
     );
+}
+function solveGame(){
+    let canvas = document.querySelector('.word');
+    const ctx = canvas.getContext('2d');
+    ctx.font = '4rem Caveat Brush';
+    ctx.fillStyle = 'white';
+    for(let i = 0; i < globalWordSelected.length; i++){
+        ctx.fillText( globalWordSelected[i], globalArrayTuplesPositions[i].x, globalArrayTuplesPositions[i].y);
+    }
 }
 /*window.addEventListener('resize', function () {
     let canvas = document.querySelector('.canvas');
